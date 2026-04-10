@@ -3,4 +3,4 @@ set -e
 
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source "$HOME/.local/bin/env"
-uv pip install --system .
+make install

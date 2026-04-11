@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 import psycopg
 import requests
 import validators
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from flask import (
     Flask,
@@ -19,6 +20,17 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+
+
+@app.template_filter("truncate")
+def truncate_text(value, length=200):
+    if value is None:
+        return ""
+
+    if len(value) <= length:
+        return value
+
+    return f"{value[:length]}...."
 
 
 def get_db_connection():
@@ -47,6 +59,26 @@ def validate_url(url):
         return errors
 
     return errors
+
+
+def parse_seo_data(html):
+    soup = BeautifulSoup(html, "html.parser")
+
+    h1 = soup.h1.get_text(strip=True) if soup.h1 else None
+    title = soup.title.get_text(strip=True) if soup.title else None
+
+    description_tag = soup.find("meta", attrs={"name": "description"})
+    description = None
+    if description_tag:
+        description = description_tag.get("content")
+        if description is not None:
+            description = description.strip() or None
+
+    return {
+        "h1": h1,
+        "title": title,
+        "description": description,
+    }
 
 
 def find_url_by_name(name):
@@ -150,18 +182,25 @@ def find_url_by_id(url_id):
     }
 
 
-def insert_url_check(url_id, status_code):
+def insert_url_check(url_id, status_code, h1=None, title=None, description=None):
     created_at = datetime.now()
 
     with get_db_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """
-                INSERT INTO url_checks (url_id, status_code, created_at)
-                VALUES (%s, %s, %s)
+                INSERT INTO url_checks (
+                    url_id,
+                    status_code,
+                    h1,
+                    title,
+                    description,
+                    created_at
+                )
+                VALUES (%s, %s, %s, %s, %s, %s)
                 RETURNING id, url_id, status_code, h1, title, description, created_at;
                 """,
-                (url_id, status_code, created_at),
+                (url_id, status_code, h1, title, description, created_at),
             )
             row = cur.fetchone()
         conn.commit()
@@ -263,7 +302,15 @@ def create_url_check(id):
     try:
         response = requests.get(url["name"], timeout=10)
         response.raise_for_status()
-        insert_url_check(id, response.status_code)
+
+        seo_data = parse_seo_data(response.text)
+        insert_url_check(
+            id,
+            response.status_code,
+            seo_data["h1"],
+            seo_data["title"],
+            seo_data["description"],
+        )
         flash("Страница успешно проверена", "success")
     except requests.RequestException:
         flash("Произошла ошибка при проверке", "danger")

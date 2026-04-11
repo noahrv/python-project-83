@@ -42,3 +42,11 @@ git clone https://github.com/noahrv/python-project-83.git
 cd python-project-83
 make install
 ```
+
+## Запуск
+
+Для запуска приложения в режиме разработки выполните:
+
+```bash
+make dev
+```

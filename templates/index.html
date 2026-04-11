@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    >
+    <title>Анализатор страниц</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+      crossorigin="anonymous"
+    >
+  </head>
+  <body class="min-vh-100 d-flex flex-column">
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+          <a class="navbar-brand" href="/">Анализатор страниц</a>
+          <div class="navbar-nav">
+            <a class="nav-link" href="#">Сайты</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="flex-grow-1">
+      <div class="container-lg mt-3">
+        <div class="row">
+          <div class="col-12">
+            <div class="bg-light border rounded-3 p-5 mt-3">
+              <h1 class="display-3">Анализатор страниц</h1>
+              <p class="lead">Бесплатно проверяйте сайты на SEO-пригодность</p>
+              <form class="row g-2" action="#" method="post">
+                <div class="col-12 col-md-8">
+                  <input
+                    type="text"
+                    name="url"
+                    class="form-control form-control-lg"
+                    placeholder="https://www.example.com"
+                  >
+                </div>
+                <div class="col-12 col-md-4">
+                  <input
+                    type="submit"
+                    class="btn btn-primary btn-lg w-100 text-uppercase"
+                    value="Проверить"
+                  >
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="border-top py-3 mt-5">
+      <div class="container text-center">
+        <a href="https://hexlet.io">Hexlet</a>
+      </div>
+    </footer>
+  </body>
+</html>

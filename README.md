@@ -1,9 +1,14 @@
 # Page Analyzer
 
+
 [![Python CI](https://github.com/noahrv/python-project-83/actions/workflows/python-ci.yml/badge.svg)](https://github.com/noahrv/python-project-83/actions/workflows/python-ci.yml)
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=noahrv_python-project-83&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=noahrv_python-project-83)
 
+### Hexlet tests and linter status:
+
 [![Actions Status](https://github.com/noahrv/python-project-83/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/noahrv/python-project-83/actions)
+
 
 ## Демо: 
 

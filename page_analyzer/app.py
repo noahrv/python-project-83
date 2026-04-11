@@ -189,7 +189,13 @@ def find_url_by_id(url_id):
     }
 
 
-def insert_url_check(url_id, status_code, h1=None, title=None, description=None):
+def insert_url_check(
+    url_id,
+    status_code,
+    h1=None,
+    title=None,
+    description=None,
+):
     created_at = datetime.now()
 
     with get_db_connection() as conn:
@@ -205,7 +211,14 @@ def insert_url_check(url_id, status_code, h1=None, title=None, description=None)
                     created_at
                 )
                 VALUES (%s, %s, %s, %s, %s, %s)
-                RETURNING id, url_id, status_code, h1, title, description, created_at;
+                RETURNING
+                    id,
+                    url_id,
+                    status_code,
+                    h1,
+                    title,
+                    description,
+                    created_at;
                 """,
                 (url_id, status_code, h1, title, description, created_at),
             )
@@ -228,7 +241,14 @@ def find_url_checks(url_id):
         with conn.cursor() as cur:
             cur.execute(
                 """
-                SELECT id, url_id, status_code, h1, title, description, created_at
+                SELECT
+                    id,
+                    url_id,
+                    status_code,
+                    h1,
+                    title,
+                    description,
+                    created_at
                 FROM url_checks
                 WHERE url_id = %s
                 ORDER BY id DESC;
@@ -262,7 +282,7 @@ def create_url():
     errors = validate_url(raw_url)
 
     if errors:
-        flash("Некорректный URL", "danger")
+        flash(errors["url"], "danger")
         return render_template(
             "index.html",
             url=raw_url,

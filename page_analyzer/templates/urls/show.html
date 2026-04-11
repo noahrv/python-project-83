@@ -20,5 +20,36 @@
       </tr>
     </tbody>
   </table>
+
+  <h2 class="mt-5 mb-3">Проверки</h2>
+
+  <form method="post" action="{{ url_for('create_url_check', id=url.id) }}">
+    <input type="submit" value="Запустить проверку" class="btn btn-primary">
+  </form>
+
+  <table data-test="checks" class="table table-bordered table-hover mt-3">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Код ответа</th>
+        <th>h1</th>
+        <th>title</th>
+        <th>description</th>
+        <th>Дата создания</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for check in checks %}
+        <tr>
+          <td>{{ check.id }}</td>
+          <td>{{ check.status_code or '' }}</td>
+          <td>{{ check.h1 or '' }}</td>
+          <td>{{ check.title or '' }}</td>
+          <td>{{ check.description or '' }}</td>
+          <td>{{ check.created_at.date() }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endblock %}

@@ -95,9 +95,22 @@ def find_all_urls():
         with conn.cursor() as cur:
             cur.execute(
                 """
-                SELECT id, name, created_at
+                SELECT
+                    urls.id,
+                    urls.name,
+                    checks.created_at AS last_check_created_at,
+                    checks.status_code AS last_check_status_code
                 FROM urls
-                ORDER BY id DESC;
+                LEFT JOIN (
+                    SELECT DISTINCT ON (url_id)
+                        id,
+                        url_id,
+                        status_code,
+                        created_at
+                    FROM url_checks
+                    ORDER BY url_id, id DESC
+                ) AS checks ON urls.id = checks.url_id
+                ORDER BY urls.id DESC;
                 """
             )
             rows = cur.fetchall()
@@ -106,7 +119,8 @@ def find_all_urls():
         {
             "id": row[0],
             "name": row[1],
-            "created_at": row[2],
+            "last_check_created_at": row[2],
+            "last_check_status_code": row[3],
         }
         for row in rows
     ]
@@ -133,6 +147,61 @@ def find_url_by_id(url_id):
         "name": row[1],
         "created_at": row[2],
     }
+
+
+def insert_url_check(url_id):
+    created_at = datetime.now()
+
+    with get_db_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO url_checks (url_id, created_at)
+                VALUES (%s, %s)
+                RETURNING id, url_id, status_code, h1, title, description, created_at;
+                """,
+                (url_id, created_at),
+            )
+            row = cur.fetchone()
+        conn.commit()
+
+    return {
+        "id": row[0],
+        "url_id": row[1],
+        "status_code": row[2],
+        "h1": row[3],
+        "title": row[4],
+        "description": row[5],
+        "created_at": row[6],
+    }
+
+
+def find_url_checks(url_id):
+    with get_db_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT id, url_id, status_code, h1, title, description, created_at
+                FROM url_checks
+                WHERE url_id = %s
+                ORDER BY id DESC;
+                """,
+                (url_id,),
+            )
+            rows = cur.fetchall()
+
+    return [
+        {
+            "id": row[0],
+            "url_id": row[1],
+            "status_code": row[2],
+            "h1": row[3],
+            "title": row[4],
+            "description": row[5],
+            "created_at": row[6],
+        }
+        for row in rows
+    ]
 
 
 @app.get("/")
@@ -178,4 +247,22 @@ def show_url(id):
         flash("Страница не найдена", "danger")
         return redirect(url_for("urls_index"))
 
-    return render_template("urls/show.html", url=url)
+    checks = find_url_checks(id)
+    return render_template("urls/show.html", url=url, checks=checks)
+
+
+@app.post("/urls/<int:id>/checks")
+def create_url_check(id):
+    url = find_url_by_id(id)
+
+    if url is None:
+        flash("Страница не найдена", "danger")
+        return redirect(url_for("urls_index"))
+
+    try:
+        insert_url_check(id)
+        flash("Страница успешно проверена", "success")
+    except Exception:
+        flash("Произошла ошибка при проверке", "danger")
+
+    return redirect(url_for("show_url", id=id))

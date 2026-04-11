@@ -262,6 +262,7 @@ def create_url():
     errors = validate_url(raw_url)
 
     if errors:
+        flash("Некорректный URL", "danger")
         return render_template(
             "index.html",
             url=raw_url,

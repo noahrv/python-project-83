@@ -30,7 +30,7 @@ def truncate_text(value, length=200):
     if len(value) <= length:
         return value
 
-    return f"{value[:length]}...."
+    return f"{value[:length]}..."
 
 
 def get_db_connection():

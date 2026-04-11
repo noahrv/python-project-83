@@ -3,6 +3,7 @@ from datetime import datetime
 from urllib.parse import urlparse
 
 import psycopg
+import requests
 import validators
 from dotenv import load_dotenv
 from flask import (
@@ -149,18 +150,18 @@ def find_url_by_id(url_id):
     }
 
 
-def insert_url_check(url_id):
+def insert_url_check(url_id, status_code):
     created_at = datetime.now()
 
     with get_db_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """
-                INSERT INTO url_checks (url_id, created_at)
-                VALUES (%s, %s)
+                INSERT INTO url_checks (url_id, status_code, created_at)
+                VALUES (%s, %s, %s)
                 RETURNING id, url_id, status_code, h1, title, description, created_at;
                 """,
-                (url_id, created_at),
+                (url_id, status_code, created_at),
             )
             row = cur.fetchone()
         conn.commit()
@@ -260,9 +261,11 @@ def create_url_check(id):
         return redirect(url_for("urls_index"))
 
     try:
-        insert_url_check(id)
+        response = requests.get(url["name"], timeout=10)
+        response.raise_for_status()
+        insert_url_check(id, response.status_code)
         flash("Страница успешно проверена", "success")
-    except Exception:
+    except requests.RequestException:
         flash("Произошла ошибка при проверке", "danger")
 
     return redirect(url_for("show_url", id=id))

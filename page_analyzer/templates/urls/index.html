@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-lg mt-3">
+  <h1>Сайты</h1>
+
+  <table data-test="urls" class="table table-bordered table-hover mt-3">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Имя</th>
+        <th>Последняя проверка</th>
+        <th>Код ответа</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for url in urls %}
+        <tr>
+          <td>{{ url.id }}</td>
+          <td>
+            <a href="{{ url_for('show_url', id=url.id) }}">
+              {{ url.name }}
+            </a>
+          </td>
+          <td></td>
+          <td></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

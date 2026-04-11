@@ -8,6 +8,8 @@ dependencies = [
     "flask>=3.0.0",
     "gunicorn>=23.0.0",
     "python-dotenv>=1.0.1",
+    "psycopg[binary]>=3.2.0",
+    "validators>=0.34.0",
 ]
 
 [dependency-groups]

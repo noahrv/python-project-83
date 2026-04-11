@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-lg mt-3">
+  <h1>Сайт: {{ url.name }}</h1>
+
+  <table data-test="url" class="table table-bordered table-hover mt-3">
+    <tbody>
+      <tr>
+        <td>ID</td>
+        <td>{{ url.id }}</td>
+      </tr>
+      <tr>
+        <td>Имя</td>
+        <td>{{ url.name }}</td>
+      </tr>
+      <tr>
+        <td>Дата создания</td>
+        <td>{{ url.created_at.date() }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

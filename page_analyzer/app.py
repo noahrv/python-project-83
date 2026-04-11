@@ -81,6 +81,13 @@ def parse_seo_data(html):
     }
 
 
+def limit_text(value, max_length=255):
+    if value is None:
+        return None
+
+    return value[:max_length]
+
+
 def find_url_by_name(name):
     with get_db_connection() as conn:
         with conn.cursor() as cur:
@@ -307,9 +314,9 @@ def create_url_check(id):
         insert_url_check(
             id,
             response.status_code,
-            seo_data["h1"],
-            seo_data["title"],
-            seo_data["description"],
+            limit_text(seo_data["h1"]),
+            limit_text(seo_data["title"]),
+            limit_text(seo_data["description"]),
         )
         flash("Страница успешно проверена", "success")
     except requests.RequestException:
